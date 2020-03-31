@@ -1,4 +1,3 @@
-
 enum PrinterModel {
   MW_140BT,
   MW_145BT,

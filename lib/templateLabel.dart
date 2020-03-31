@@ -1,8 +1,4 @@
-
-import 'package:brotherlabelprintdart/pair.dart';
-
 class TemplateLabel {
-
   int templateKey;
   List<String> texts;
 
@@ -24,7 +20,7 @@ class TemplateLabel {
 
     result.add("START||$templateKey");
 
-    for(String text in texts) {
+    for (String text in texts) {
       result.add("TEXT||$text");
     }
 
