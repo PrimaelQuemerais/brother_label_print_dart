@@ -1,4 +1,4 @@
-# brotherlabelprintdart
+# Brother Label Printer Dart
 
 A dart plugin implementing the Brother Label Print SDK
 
