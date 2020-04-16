@@ -15,6 +15,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final String ipOfPrinter = "192.168.68.128";
+  final PrinterModel printerModel = PrinterModel.RJ_2150;
   String _printStatus = 'Initializing...';
 
   void print(bool bulk) async {
@@ -51,7 +53,7 @@ class _MyAppState extends State<MyApp> {
     String result;
     try {
       result = await Brotherlabelprintdart.printLabelFromTemplate(
-          "192.168.1.42", PrinterModel.TD_2120N, labels);
+          ipOfPrinter, printerModel, labels);
     } catch (e) {
       result = "An error occured : $e";
     }
@@ -68,7 +70,7 @@ class _MyAppState extends State<MyApp> {
     try {
       // width and height might be to be of image dimensions.
       result = await Brotherlabelprintdart.printLabelFromImage(
-          "192.168.1.42", PrinterModel.TD_2120N, file, 100, 100);
+          ipOfPrinter, printerModel, file, 100, 100);
     } catch (e) {
       result = "An error occured : $e";
     }
@@ -88,7 +90,7 @@ class _MyAppState extends State<MyApp> {
     try {
       // numberOfPages should be passed according to file.
       result = await Brotherlabelprintdart.printLabelFromPdf(
-          "192.168.1.42", PrinterModel.TD_2120N, file, 1);
+          ipOfPrinter, printerModel, file, 1);
     } catch (e) {
       result = "An error occured : $e";
     }
