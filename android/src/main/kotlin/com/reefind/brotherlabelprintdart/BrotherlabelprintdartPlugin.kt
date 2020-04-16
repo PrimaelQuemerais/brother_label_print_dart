@@ -1,6 +1,7 @@
 package com.reefind.brotherlabelprintdart
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.annotation.NonNull
 import com.brother.ptouch.sdk.Printer
@@ -41,14 +42,14 @@ public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
       "printLabelFromImage" -> result.success(printLabelFromImage(
               call.argument<String>("ip").orEmpty(),
               call.argument<Int>("model")!!,
-              call.argument<List<Int>>("data").orEmpty(),
+              call.argument<Array<Byte>>("data")!!,
               call.argument<Int>("width")!!,
               call.argument<Int>("height")!!
       ))
       "printLabelFromPdf" -> result.success(printLabelFromPdf(
               call.argument<String>("ip").orEmpty(),
               call.argument<Int>("model")!!,
-              call.argument<List<Int>>("data").orEmpty(),
+              call.argument<Array<Byte>>("data")!!,
               call.argument<Int>("numberOfPages")!!
       ))
       else -> result.notImplemented()
@@ -59,7 +60,7 @@ public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
 
   }
 
-  private fun printLabelFromImage(printerIp: String, printerModel: Int, data: List<Int>, width : Int, height : Int) : String{
+  private fun printLabelFromImage(printerIp: String, printerModel: Int, data: Array<Byte>, width : Int, height : Int) : String{
     val printer = Printer()
 
     val info = PrinterInfo()
@@ -75,8 +76,7 @@ public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
 
         //val result = PrinterStatus()
 
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        bitmap.copyPixelsFromBuffer(IntBuffer.wrap(data.toIntArray()))
+        val bitmap = BitmapFactory.decodeByteArray(data.toByteArray(), 0, data.size)
 
         val result = printer.printImage(bitmap);
 
@@ -134,7 +134,7 @@ public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
     return "Finished"
   }
 
-  private fun printLabelFromPdf(printerIp: String, printerModel: Int, data: List<Int>, numberOfPages : Int) : String{
+  private fun printLabelFromPdf(printerIp: String, printerModel: Int, data: Array<Byte>, numberOfPages : Int) : String{
     val printer = Printer()
 
     val info = PrinterInfo()
@@ -151,7 +151,6 @@ public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
         var result = PrinterStatus()
 
         val pdfFile = File.createTempFile("label", "pdf");
-        data.toTypedArray()
         val tmp = ByteArray(data.size)
         for(i in data) {
           tmp[tmp.lastIndex] = i.toByte()
