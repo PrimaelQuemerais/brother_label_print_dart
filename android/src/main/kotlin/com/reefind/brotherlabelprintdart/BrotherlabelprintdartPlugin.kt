@@ -1,5 +1,6 @@
 package com.reefind.brotherlabelprintdart
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.annotation.NonNull
 import com.brother.ptouch.sdk.Printer
@@ -11,6 +12,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import java.io.File
+import java.nio.IntBuffer
 
 /** BrotherlabelprintdartPlugin */
 public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
@@ -35,6 +38,19 @@ public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
               call.argument<Int>("model")!!,
               call.argument<List<String>>("data").orEmpty()
       ))
+      "printLabelFromImage" -> result.success(printLabelFromImage(
+              call.argument<String>("ip").orEmpty(),
+              call.argument<Int>("model")!!,
+              call.argument<List<Int>>("data").orEmpty(),
+              call.argument<Int>("width")!!,
+              call.argument<Int>("height")!!
+      ))
+      "printLabelFromPdf" -> result.success(printLabelFromPdf(
+              call.argument<String>("ip").orEmpty(),
+              call.argument<Int>("model")!!,
+              call.argument<List<Int>>("data").orEmpty(),
+              call.argument<Int>("numberOfPages")!!
+      ))
       else -> result.notImplemented()
     }
   }
@@ -43,7 +59,82 @@ public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
 
   }
 
+  private fun printLabelFromImage(printerIp: String, printerModel: Int, data: List<Int>, width : Int, height : Int) : String{
+    val printer = Printer()
+
+    val info = PrinterInfo()
+
+    info.ipAddress = printerIp
+    info.printerModel = PrinterInfo.Model.valueFromID(printerModel)
+    info.port = PrinterInfo.Port.NET
+    printer.printerInfo = info
+
+    val thread = Thread(Runnable {
+      try {
+        Log.d("BROTHER LABEL PRINT", "Thread started")
+
+        //val result = PrinterStatus()
+
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmap.copyPixelsFromBuffer(IntBuffer.wrap(data.toIntArray()))
+
+        val result = printer.printImage(bitmap);
+
+        if(result.errorCode != PrinterInfo.ErrorCode.ERROR_NONE) {
+          Log.e("BROTHER PRINTER ERROR", result.errorCode.toString())
+        }
+      } catch (e: Exception) {
+        e.printStackTrace()
+      }
+      Log.d("BROTHER LABEL PRINT", "Print finished")
+    })
+
+    thread.start()
+    Log.d("BROTHER LABEL PRINT", "Printing on : $printerIp")
+
+    return "Finished"
+  }
+
   private fun printLabelFromTemplate(printerIp : String, printerModel : Int, data : List<String>) : String {
+    val printer = Printer()
+
+    val info = PrinterInfo()
+    info.ipAddress = printerIp
+    info.printerModel = PrinterInfo.Model.valueFromID(printerModel)
+    info.port = PrinterInfo.Port.NET
+    printer.printerInfo = info
+
+    val thread = Thread(Runnable {
+      try {
+        Log.d("BROTHER LABEL PRINT", "Thread started")
+
+        var result = PrinterStatus()
+
+        for(d in data) {
+          val tmp = d.split("||")
+          when(tmp[0]) {
+            "START" -> printer.startPTTPrint(tmp[1].toInt(), null)
+            "TEXT" -> printer.replaceText(tmp[1])
+            "END" -> result = printer.flushPTTPrint()
+          }
+        }
+
+        if(result.errorCode != PrinterInfo.ErrorCode.ERROR_NONE) {
+          Log.e("BROTHER PRINTER ERROR", result.errorCode.toString())
+        }
+      } catch (e: Exception) {
+        e.printStackTrace()
+      }
+      Log.d("BROTHER LABEL PRINT", "Print finished")
+    })
+
+    thread.start()
+    Log.d("BROTHER LABEL PRINT", "Printing on : $printerIp")
+
+    return "Finished"
+  }
+
+  private fun printLabelFromPdf(printerIp: String, printerModel: Int, data: List<Int>, numberOfPages : Int) : String{
     val printer = Printer()
 
     val info = PrinterInfo()
@@ -59,14 +150,18 @@ public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
 
         var result = PrinterStatus()
 
-        for(d in data) {
-          var tmp = d.split("||")
-          when(tmp[0]) {
-            "START" -> printer.startPTTPrint(tmp[1].toInt(), null)
-            "TEXT" -> printer.replaceText(tmp[1])
-            "END" -> result = printer.flushPTTPrint()
-          }
+        val pdfFile = File.createTempFile("label", "pdf");
+        data.toTypedArray()
+        val tmp = ByteArray(data.size)
+        for(i in data) {
+          tmp[tmp.lastIndex] = i.toByte()
         }
+        pdfFile.writeBytes(tmp)
+
+        for(i in 0..numberOfPages) {
+          result = printer.printPDF(pdfFile.path, i);
+        }
+
 
         if(result.errorCode != PrinterInfo.ErrorCode.ERROR_NONE) {
           Log.e("BROTHER PRINTER ERROR", result.errorCode.toString())

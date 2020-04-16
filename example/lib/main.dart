@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:brotherlabelprintdart/print.dart';
@@ -58,6 +61,43 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void printImage() async {
+    File file = await FilePicker.getFile(type: FileType.image);
+
+    String result;
+    try {
+      // width and height might be to be of image dimensions.
+      result = await Brotherlabelprintdart.printLabelFromImage(
+          "192.168.1.42", PrinterModel.TD_2120N, file, 100, 100);
+    } catch (e) {
+      result = "An error occured : $e";
+    }
+
+    setState(() {
+      _printStatus = result;
+    });
+  }
+
+  void printPdf() async {
+    File file = await FilePicker.getFile(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    String result;
+    try {
+      // numberOfPages should be passed according to file.
+      result = await Brotherlabelprintdart.printLabelFromPdf(
+          "192.168.1.42", PrinterModel.TD_2120N, file, 1);
+    } catch (e) {
+      result = "An error occured : $e";
+    }
+
+    setState(() {
+      _printStatus = result;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -81,6 +121,18 @@ class _MyAppState extends State<MyApp> {
               child: Text("Print 5 labels"),
               onPressed: () {
                 print(true);
+              },
+            ),
+            MaterialButton(
+              child: Text("Print from image"),
+              onPressed: () {
+                printImage();
+              },
+            ),
+            MaterialButton(
+              child: Text("Print from PDF"),
+              onPressed: () {
+                printPdf();
               },
             )
           ],
