@@ -32,7 +32,7 @@ class Brotherlabelprintdart {
 
     return await _channel.invokeMethod("printLabelFromImage", {
       "ip": ip,
-      "model": model,
+      "model": model.index,
       "data": data,
       "width": width,
       "height": height
@@ -45,7 +45,7 @@ class Brotherlabelprintdart {
 
     return await _channel.invokeMethod("printLabelFromPdf", {
       "ip": ip,
-      "model": model,
+      "model": model.index,
       "data": data,
       "numberOfPages": numberOfPages
     });
