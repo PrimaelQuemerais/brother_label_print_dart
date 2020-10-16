@@ -77,7 +77,7 @@ public class BrotherlabelprintdartPlugin: FlutterPlugin, MethodCallHandler {
         //val result = PrinterStatus()
 
         val dataInt = IntArray(data.size / 2) {
-          (data[it * 2].toUByte().toInt() + (data[(it * 2) + 1].toInt() shl 8)).toInt()
+          (data[it * 2].toUByte().toInt() + (data[(it * 2) + 1].toInt() shl 8))
         }
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)

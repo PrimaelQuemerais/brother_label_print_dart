@@ -1,3 +1,6 @@
+## 0.1.1
+ - Added error catching
+
 ## 0.1.0
  - Out of Alpha state
  - Applied dartanalyzer recommendations

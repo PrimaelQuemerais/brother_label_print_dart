@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:brotherlabelprintdart/printerModel.dart';
 import 'package:brotherlabelprintdart/templateLabel.dart';
@@ -23,31 +22,40 @@ class Brotherlabelprintdart {
       data += label.toNative();
     }
 
-    return await _channel.invokeMethod('printLabelFromTemplate',
-        {"ip": ip, "model": model.index, "data": data});
+    try {
+      return await _channel.invokeMethod('printLabelFromTemplate',
+          {"ip": ip, "model": model.index, "data": data});
+    } catch (e) {
+      throw 'Template print failed : $e';
+    }
   }
 
   static Future<String> printLabelFromImage(
       String ip, PrinterModel model, File image, int width, int height) async {
-
-
-    return await _channel.invokeMethod("printLabelFromImage", {
-      "ip": ip,
-      "model": model.index,
-      "data": image.readAsBytesSync(),
-      "width": width,
-      "height": height
-    });
+    try {
+      return await _channel.invokeMethod("printLabelFromImage", {
+        "ip": ip,
+        "model": model.index,
+        "data": image.readAsBytesSync(),
+        "width": width,
+        "height": height
+      });
+    } catch (e) {
+      throw 'Image print failed : $e';
+    }
   }
 
   static Future<String> printLabelFromPdf(
-    String ip, PrinterModel model, File pdf, int numberOfPages) async {
-
-    return await _channel.invokeMethod("printLabelFromPdf", {
-      "ip": ip,
-      "model": model.index,
-      "data": pdf.readAsBytesSync(),
-      "numberOfPages": numberOfPages
-    });
+      String ip, PrinterModel model, File pdf, int numberOfPages) async {
+    try {
+      return await _channel.invokeMethod("printLabelFromPdf", {
+        "ip": ip,
+        "model": model.index,
+        "data": pdf.readAsBytesSync(),
+        "numberOfPages": numberOfPages
+      });
+    } catch (e) {
+      throw 'Pdf print failed : $e';
+    }
   }
 }

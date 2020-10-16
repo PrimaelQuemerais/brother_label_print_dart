@@ -64,40 +64,47 @@ class _MyAppState extends State<MyApp> {
   }
 
   void printImage() async {
-    File file = await FilePicker.getFile(type: FileType.image);
+    FilePickerResult fileResult =
+        await FilePicker.platform.pickFiles(type: FileType.image);
 
-    String result;
-    try {
-      // width and height might be to be of image dimensions.
-      result = await Brotherlabelprintdart.printLabelFromImage(
-          ipOfPrinter, printerModel, file, 100, 100);
-    } catch (e) {
-      result = "An error occured : $e";
+    if (fileResult != null) {
+      File file = File(fileResult.files.single.path);
+
+      String result;
+      try {
+        // width and height might be to be of image dimensions.
+        result = await Brotherlabelprintdart.printLabelFromImage(
+            ipOfPrinter, printerModel, file, 100, 100);
+      } catch (e) {
+        result = "An error occured : $e";
+      }
+
+      setState(() {
+        _printStatus = result;
+      });
     }
-
-    setState(() {
-      _printStatus = result;
-    });
   }
 
   void printPdf() async {
-    File file = await FilePicker.getFile(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
+    FilePickerResult fileResult = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
 
-    String result;
-    try {
-      // numberOfPages should be passed according to file.
-      result = await Brotherlabelprintdart.printLabelFromPdf(
-          ipOfPrinter, printerModel, file, 1);
-    } catch (e) {
-      result = "An error occured : $e";
+    if (fileResult != null) {
+      File file = File(fileResult.files.single.path);
+
+      String result;
+      try {
+        // numberOfPages should be passed according to file.
+        result = await Brotherlabelprintdart.printLabelFromPdf(
+            ipOfPrinter, printerModel, file, 1);
+      } catch (e) {
+        result = "An error occured : $e";
+      }
+
+      setState(() {
+        _printStatus = result;
+      });
     }
-
-    setState(() {
-      _printStatus = result;
-    });
   }
 
   @override
