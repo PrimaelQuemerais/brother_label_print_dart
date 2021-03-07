@@ -1,3 +1,6 @@
+## 0.1.3+2
+ - Fix AAR problem (experimental, you may want to use the previous version)
+
 ## 0.1.1
  - Added error catching
 
