@@ -18,6 +18,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await Brotherlabelprintdart.platformVersion, '42');
+    expect(await BrotherLabelPrintDart.platformVersion, '42');
   });
 }

@@ -5,7 +5,7 @@ import 'package:brotherlabelprintdart/printerModel.dart';
 import 'package:brotherlabelprintdart/templateLabel.dart';
 import 'package:flutter/services.dart';
 
-class Brotherlabelprintdart {
+class BrotherLabelPrintDart {
   static const MethodChannel _channel =
       const MethodChannel('brotherlabelprintdart');
 
@@ -16,7 +16,7 @@ class Brotherlabelprintdart {
 
   static Future<String> printLabelFromTemplate(
       String ip, PrinterModel model, List<TemplateLabel> labels) async {
-    List<String> data = List<String>();
+    List<String> data = <String>[];
 
     for (TemplateLabel label in labels) {
       data += label.toNative();

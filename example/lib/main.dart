@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
       _printStatus = "Running...";
     });
 
-    List<TemplateLabel> labels = List<TemplateLabel>();
+    List<TemplateLabel> labels = <TemplateLabel>[];
 
     if (bulk) {
       for (int i = 0; i < 5; i++) {
@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
 
     String result;
     try {
-      result = await Brotherlabelprintdart.printLabelFromTemplate(
+      result = await BrotherLabelPrintDart.printLabelFromTemplate(
           ipOfPrinter, printerModel, labels);
     } catch (e) {
       result = "An error occured : $e";
@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
       String result;
       try {
         // width and height might be to be of image dimensions.
-        result = await Brotherlabelprintdart.printLabelFromImage(
+        result = await BrotherLabelPrintDart.printLabelFromImage(
             ipOfPrinter, printerModel, file, 100, 100);
       } catch (e) {
         result = "An error occured : $e";
@@ -95,7 +95,7 @@ class _MyAppState extends State<MyApp> {
       String result;
       try {
         // numberOfPages should be passed according to file.
-        result = await Brotherlabelprintdart.printLabelFromPdf(
+        result = await BrotherLabelPrintDart.printLabelFromPdf(
             ipOfPrinter, printerModel, file, 1);
       } catch (e) {
         result = "An error occured : $e";
