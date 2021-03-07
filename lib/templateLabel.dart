@@ -16,7 +16,7 @@ class TemplateLabel {
 
     return result; */
 
-    List<String> result = List<String>();
+    List<String> result = <String>[];
 
     result.add("START||$templateKey");
 
